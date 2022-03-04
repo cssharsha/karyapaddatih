@@ -39,26 +39,32 @@ namespace algos {
               int i_beg, j_beg;
               int i_end, j_end;
 
-              int height = (filter_height_ / 2);
-              int width = (filter_width_ / 2);
+              int height = std::ceil((float)filter_height_ / 2.0f);
+              int width = std::ceil((float)filter_width_ / 2.0f);
 
-              i_beg = (i - height < 0)? 0: i - height;
-              j_beg = (j - width < 0)? 0: j - width;
+              i_beg = i - height;
+              j_beg = j - width;
 
-              i_end = (i + height >= M)? M - 1: i + height;
-              j_end = (j + width >= N)? N - 1: j + width;
+              i_end = (i + height >= M)? M - 1: i + height - 1;
+              j_end = (j + width >= N)? N - 1: j + width - 1;
+
+
+              int filter_sum_i_end_j_end = sum_image->at(i_end, j_end);
+              int filter_sum_i_beg_j_end = (i_beg < 0)? 0: sum_image->at(i_beg, j_end);
+              int filter_sum_i_end_j_beg = (j_beg < 0)? 0: sum_image->at(i_end, j_beg);
+              int filter_sum_i_beg_j_beg = (i_beg < 0 || j_beg < 0)? 0: sum_image->at(i_beg, j_beg);
 
               std::cout << i << ", " << j << ": " <<
-                sum_image->at(i_end, j_end) << ", " <<
-                sum_image->at(i_end, j_beg) << ", " <<
-                sum_image->at(i_beg, j_end) << ", " <<
-                sum_image->at(i_beg, j_beg) << "\n";
+                filter_sum_i_end_j_end << ", " <<
+                filter_sum_i_beg_j_end << ", " <<
+                filter_sum_i_end_j_beg << ", " <<
+                filter_sum_i_beg_j_beg << "\n";
 
               filter_sum_image->at(i, j) =
-                sum_image->at(i_end, j_end) -
-                sum_image->at(i_beg, j) -
-                sum_image->at(i, j_beg) +
-                sum_image->at(i_beg, j_beg);
+                filter_sum_i_end_j_end -
+                filter_sum_i_beg_j_end -
+                filter_sum_i_end_j_beg +
+                filter_sum_i_beg_j_beg;
             }
           }
 
